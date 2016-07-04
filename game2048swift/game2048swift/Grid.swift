@@ -10,6 +10,10 @@ import Foundation
 
 import SpriteKit
 
+func ==(lhs: Grid, rhs: Grid) -> Bool {
+    return lhs.hashValue == rhs.hashValue
+}
+
 class Grid {
     var row : Int
     var column : Int
@@ -34,6 +38,10 @@ class Grid {
         let title = getTextNode(self.number)
         node.addChild(title)
         return self
+    }
+    
+    func moveByDirection(direction : SlideDirection, distance : Int){
+        
     }
     
     func moveTo(targetRow : Int, targetColomn: Int){
@@ -115,3 +123,10 @@ private extension Grid {
     }
 }
 
+extension Grid : Hashable{
+    var hashValue : Int {
+        get{
+            return self.row * 10 + self.column
+        }
+    }
+}

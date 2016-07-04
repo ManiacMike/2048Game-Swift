@@ -9,11 +9,13 @@
 import Foundation
 import SpriteKit
 
+
 class Matrix{
     var node : SKSpriteNode!
     private var parentNode: SKSpriteNode!
     var matrixByRow = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
-    var matrixByColumn = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
+    var grids = [Grid:[Int]]()
+    var curDirection : SlideDirection = .Invalid
     
     init(){
         let gameArea = SKSpriteNode(imageNamed: "2048bg")
@@ -37,6 +39,7 @@ class Matrix{
         //        guard direction != .Invalid else {
         //            throw GameError.InvalidDirection
         //        }
+        curDirection = direction
         
         var calMatrix : [[UInt]] = getEmptyMatrix()
         switch direction {
@@ -77,6 +80,7 @@ class Matrix{
             matrixByRow = newMatrix
         }
         
+        self.runActions(actionMatrix)
         return actionMatrix
     }
 }
@@ -97,8 +101,8 @@ private extension Matrix{
         let x = spaceFlag[randNum]["x"]!
         let showNum = UInt(UInt.random(min: 1, max: 2)*2);
         matrixByRow[y][x] = showNum
-        matrixByColumn[x][y] = showNum
-        Grid(row: xmap(x), column: ymap(y), showNum: showNum).addTo(self)
+        let grid = Grid(row: xmap(x), column: ymap(y), showNum: showNum).addTo(self)
+        grids[grid] = [y,x]
     }
     
     func ymap(key : Int) -> Int{
@@ -208,5 +212,22 @@ private extension Matrix{
         }
         
         return (newline, returnActionCodes)
+    }
+    
+    func runActions(actionMatrix : [[Int]]){
+        for (grid, position) in grids {
+            let i = position[0]
+            let j = position[1]
+            let actionCode = actionMatrix[i][j]
+            if actionCode < 0{//move and disappear
+                let moveDistance = -1 - actionCode
+                //TODO
+                grid.moveByDirection(curDirection, distance: moveDistance)
+            }else if actionCode > 0 && actionCode<5 { // just move
+                
+            }else if actionCode > 9{//move and duoble
+                
+            }
+        }
     }
 }
