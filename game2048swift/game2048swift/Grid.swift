@@ -29,20 +29,28 @@ class Grid {
         self.parentNode = parentNode.node
         parentNode.node.addChild(node)
         node.zPosition = 2
-        node.position = getPosition()
+        node.position = getPosition(self.row, column: self.column)
         
-        let title = SKLabelNode(fontNamed: "Clear Sans")
-        title.text = String(number)
-        title.fontSize = 40
-        title.position = CGPointMake(0,-10)
-        title.zPosition = 3
-        title.fontColor = getFontColor()
+        let title = getTextNode(self.number)
         node.addChild(title)
         return self
     }
     
-    func moveTo(row : Int, colomn: Int){
-        
+    func moveTo(targetRow : Int, targetColomn: Int){
+        let targetPosition = getPosition(targetRow, column: targetColomn)
+        self.node.runAction(SKAction.moveTo(targetPosition, duration: 0.5))
+    }
+    
+    func doubled(){
+        self.number *= 2
+        self.node.childNodeWithName("text")?.removeFromParent()
+        let title = getTextNode(self.number)
+        node.addChild(title)
+        self.node.color = getBlockColor()
+    }
+    
+    func disappear(){
+        self.node.removeFromParent()
     }
 }
 
@@ -81,18 +89,29 @@ private extension Grid {
         return color
     }
     
-    func getFontColor() -> UIColor{
-        if(self.number == 2 || self.number == 4){
+    func getFontColor(showNum : UInt) -> UIColor{
+        if(showNum == 2 || showNum == 4){
             return UIColor.init(red: 119/255, green: 110/255, blue: 101/255, alpha: 1)
         }else{
             return UIColor.whiteColor()
         }
     }
     
-    func getPosition() -> CGPoint{
+    func getPosition(row : Int, column: Int) -> CGPoint{
         let x = (gridWidth + 14) * CGFloat(((row > 0) ?(Float(row) - 0.5): (Float(row) + 0.5)))
         let y = (gridWidth + 14) * CGFloat(((column > 0) ?(Float(column) - 0.5): (Float(column) + 0.5)))
         return CGPointMake(x,y)
+    }
+    
+    func getTextNode(showNum : UInt) -> SKLabelNode{
+        let title = SKLabelNode(fontNamed: "Clear Sans")
+        title.text = String(showNum)
+        title.fontSize = 40
+        title.position = CGPointMake(0,-10)
+        title.zPosition = 3
+        title.fontColor = getFontColor(showNum)
+        title.name = "text"
+        return title
     }
 }
 

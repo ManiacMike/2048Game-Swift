@@ -35,7 +35,8 @@ class GameScene: SKScene {
         
         matrix.addTo(screenNode)
         matrix.startGame()
-        //        Grid(row: 1, column: 1).addTo(matrix)
+//        let a = Grid(row: 1, column: 1 , showNum: 2).addTo(matrix)
+//        a.disappear()
         self.addChild(screenNode)
     }
     
