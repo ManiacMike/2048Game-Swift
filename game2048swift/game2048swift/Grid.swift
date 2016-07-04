@@ -13,15 +13,15 @@ import SpriteKit
 class Grid {
     var row : Int
     var column : Int
-    var number : uint
+    var number : UInt
     var node : SKSpriteNode!
     private var parentNode: SKSpriteNode!
     let gridWidth :CGFloat = 107
     
-    init(row : Int, column: Int){
+    init(row : Int, column: Int, showNum: UInt){
         self.row = row
         self.column = column
-        self.number = 2
+        self.number = showNum
         self.node = createNode()
     }
     
@@ -40,6 +40,10 @@ class Grid {
         node.addChild(title)
         return self
     }
+    
+    func moveTo(row : Int, colomn: Int){
+        
+    }
 }
 
 // Creators
@@ -50,7 +54,7 @@ private extension Grid {
         node = grid
         return grid
     }
-
+    
     
     func getBlockColor() -> UIColor{
         let color : UIColor

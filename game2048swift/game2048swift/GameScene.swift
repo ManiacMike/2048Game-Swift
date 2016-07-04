@@ -26,16 +26,16 @@ class GameScene: SKScene {
     lazy private var matrix = Matrix()
     
     override func didMoveToView(view: SKView) {
-//        print(UIFont.familyNames())
+        //        print(UIFont.familyNames())
         
         screenNode = SKSpriteNode(color: UIColor.whiteColor(), size: self.size)
         screenNode.anchorPoint = CGPoint(x: 0, y: 0)
         
         addTitle()
-
+        
         matrix.addTo(screenNode)
         matrix.startGame()
-//        Grid(row: 1, column: 1).addTo(matrix)
+        //        Grid(row: 1, column: 1).addTo(matrix)
         self.addChild(screenNode)
     }
     
@@ -46,7 +46,7 @@ class GameScene: SKScene {
             break
         }
     }
-   
+    
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         var touchEndPoint : CGPoint = CGPoint(x: 0, y: 0)
         for touch in touches {

@@ -34,9 +34,9 @@ class Matrix{
     
     func move(direction : SlideDirection) -> [[Int]]{
         
-//        guard direction != .Invalid else {
-//            throw GameError.InvalidDirection
-//        }
+        //        guard direction != .Invalid else {
+        //            throw GameError.InvalidDirection
+        //        }
         
         var calMatrix : [[UInt]] = getEmptyMatrix()
         switch direction {
@@ -98,7 +98,7 @@ private extension Matrix{
         let showNum = UInt(UInt.random(min: 1, max: 2)*2);
         matrixByRow[y][x] = showNum
         matrixByColumn[x][y] = showNum
-        Grid(row: xmap(x), column: ymap(y)).addTo(self)
+        Grid(row: xmap(x), column: ymap(y), showNum: showNum).addTo(self)
     }
     
     func ymap(key : Int) -> Int{
