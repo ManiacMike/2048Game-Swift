@@ -58,7 +58,7 @@ class Matrix{
         for i in  0...3{
             let orderLine = getOrderLine(calMatrix[i])
             newMatrix[i] = orderLine.newline
-            actionMatrix[i] = orderLine.actionCodes
+            actionMatrix[i] = orderLine.returnActionCodes
         }
         
         switch direction {
@@ -163,8 +163,7 @@ private extension Matrix{
     }
     
     //返回动作和组合后的顺序，"重力面"在前
-    //0为无动作，1为消失，2为double,两数合并前面的数double
-    func getOrderLine(line : [UInt]) -> (newline : [UInt],actionCodes : [Int]){
+    func getOrderLine(line : [UInt]) -> (newline : [UInt],returnActionCodes : [Int]){
         var drop = 0,lastNotZeroIndex = -1
         var actions = [[Int]]()
         var newline = [UInt](count :4, repeatedValue: 0)
@@ -174,26 +173,26 @@ private extension Matrix{
                 if(lastNotZeroIndex != -1 && line[lastNotZeroIndex] == line[i]){//前面存在整数
                     action = [1, drop]
                     actions[lastNotZeroIndex][0] = 2//前面的数标记为double
-                    drop += drop
-                    lastNotZeroIndex = -1
+                    drop += 1
                 }else{
                     action = [0, drop]
                 }
                 lastNotZeroIndex = i
             }else if (line[i] == 0){
-                drop += drop
+                drop += 1
                 action = [0,0]
             }
             actions.append(action);
         }
-        var actionCodes = [Int](count : 4,repeatedValue : 0)
+        var returnActionCodes = [Int](count : 4,repeatedValue : 0)
+        print(actions)
         for i in 0...3 {
-            var action = [Int](count :2, repeatedValue: 0)
+            var action = actions[i]
             if action[0] == 0 {
-                actionCodes[i] = action[1]
+                returnActionCodes[i] = action[1]
                 newline[i-action[1]] = line[i];
             }else if (action[0] == 1){
-                actionCodes[i] = -1 - action[1];
+                returnActionCodes[i] = -1 - action[1];
             }else{
                 //get delay
                 var delay :Int = 0;
@@ -203,11 +202,11 @@ private extension Matrix{
                         break;
                     }
                 }
-                actionCodes[i] = 10 + action[1] + delay*10;
+                returnActionCodes[i] = 10 + action[1] + delay*10;
                 newline[i-action[1]] = line[i]*2;
             }
         }
         
-        return (newline, actionCodes)
+        return (newline, returnActionCodes)
     }
 }

@@ -64,7 +64,9 @@ class GameScene: SKScene {
             direction = y>0 ? .Up : .Down
         }
         print(direction)
-        print(matrix.move(direction))
+        if direction != .Invalid{
+            print(matrix.move(direction))
+        }
     }
     
     
