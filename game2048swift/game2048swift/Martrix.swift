@@ -9,6 +9,7 @@
 import Foundation
 import SpriteKit
 
+let gridInterval : Double = 0.15 //移动一个格子的时间
 
 class Matrix{
     var node : SKSpriteNode!
@@ -37,7 +38,7 @@ class Matrix{
     func stepGame(){
         let step =  SKAction.sequence(
             [
-                SKAction.waitForDuration(0.45),
+                SKAction.waitForDuration(gridInterval * 3),
                 SKAction.runBlock {
                     self.addNumberInSpace()
                 }
@@ -106,7 +107,7 @@ class Matrix{
         let randNum = Int(UInt.random(min: 0, max: UInt(spaceFlag.count)))
         let y = spaceFlag[randNum]["y"]!
         let x = spaceFlag[randNum]["x"]!
-        let showNum = UInt(UInt.random(min: 1, max: 2)*2);
+        let showNum = UInt(UInt.random(min: 1, max: 3)*2);
         matrixByRow[y][x] = showNum
         let grid = Grid(row: Matrix.xmap(x), column: Matrix.ymap(y), showNum: showNum).addTo(self)
         grids[grid] = [y,x]
@@ -267,7 +268,7 @@ private extension Matrix{
                 grids[grid] = [Matrix.ymapReverse(grid.column),Matrix.xmapReverse(grid.row)]
                 let double =  SKAction.sequence(
                     [
-                        SKAction.waitForDuration(Double(delay) * 0.15),
+                        SKAction.waitForDuration(Double(delay) * gridInterval),
                         SKAction.runBlock {
                             grid.doubled()
                         },

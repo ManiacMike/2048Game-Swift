@@ -8,6 +8,8 @@
 
 import Foundation
 
+
+//最小数min ,不包括max
 extension UInt {
     static func random(min lower: UInt = min, max upper: UInt = max) -> UInt {
         var m: UInt
