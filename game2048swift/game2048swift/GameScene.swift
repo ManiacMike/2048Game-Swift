@@ -18,6 +18,7 @@ enum SlideDirection {
 
 enum GameError: ErrorType {
     case InvalidDirection
+    case OtherError
 }
 
 class GameScene: SKScene {

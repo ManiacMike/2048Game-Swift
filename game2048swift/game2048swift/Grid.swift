@@ -40,8 +40,25 @@ class Grid {
         return self
     }
     
-    func moveByDirection(direction : SlideDirection, distance : Int){
+    func moveByDirection(direction : SlideDirection, distance : Int) -> SKAction{
         
+        switch direction {
+        case .Up:
+            let y = Matrix.ymapReverse(column) - distance
+            column = Matrix.ymap(y)
+        case .Down:
+            let y = Matrix.ymapReverse(column) + distance
+            column = Matrix.ymap(y)
+        case .Left:
+            let x = Matrix.xmapReverse(row) - distance
+            row = Matrix.xmap(x)
+        case .Right:
+            let x = Matrix.xmapReverse(row) + distance
+            row = Matrix.xmap(x)
+        default: break
+        }
+        let targetPosition = getPosition(row, column: column)
+        return SKAction.moveTo(targetPosition, duration: 0.5)
     }
     
     func moveTo(targetRow : Int, targetColomn: Int){

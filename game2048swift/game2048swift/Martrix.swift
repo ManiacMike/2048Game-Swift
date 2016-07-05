@@ -36,9 +36,6 @@ class Matrix{
     
     func move(direction : SlideDirection) -> [[Int]]{
         
-        //        guard direction != .Invalid else {
-        //            throw GameError.InvalidDirection
-        //        }
         curDirection = direction
         
         var calMatrix : [[UInt]] = getEmptyMatrix()
@@ -51,8 +48,7 @@ class Matrix{
             calMatrix = reverseMatrix(matrixByRow);
         case .Left:
             calMatrix = matrixByRow
-        default:
-            calMatrix = matrixByRow
+        default: break
         }
         
         var newMatrix = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
@@ -72,16 +68,38 @@ class Matrix{
             matrixByRow = transferMatrix(reverseMatrix(newMatrix))
             actionMatrix = transferMatrix(reverseMatrix(actionMatrix))
         case .Right:
-            matrixByRow = reverseMatrix(reverseMatrix(newMatrix))
-            actionMatrix = reverseMatrix(reverseMatrix(actionMatrix))
+            matrixByRow = reverseMatrix(newMatrix)
+            actionMatrix = reverseMatrix(actionMatrix)
         case .Left:
             matrixByRow = newMatrix
-        default:
-            matrixByRow = newMatrix
+        default: break
         }
         
+        print(actionMatrix)
         self.runActions(actionMatrix)
         return actionMatrix
+    }
+}
+
+extension Matrix{
+    static func ymap(key : Int) -> Int{
+        let dic = [0 : 2, 1 : 1, 2 : -1, 3 : -2]
+        return dic[key]!
+    }
+    
+    static func xmap(key : Int) -> Int{
+        let dic = [0 : -2, 1 : -1, 2 : 1, 3 : 2]
+        return dic[key]!
+    }
+    
+    static func ymapReverse(column : Int) -> Int{
+        let dic = [2 : 1, 1 : 1, -1 : 2, -2 : 3]
+        return dic[column]!
+    }
+    
+    static func xmapReverse(row : Int) -> Int{
+        let dic = [-2 : 0, -1 : 1, 1 : 2, 2 : 3]
+        return dic[row]!
     }
 }
 
@@ -101,18 +119,8 @@ private extension Matrix{
         let x = spaceFlag[randNum]["x"]!
         let showNum = UInt(UInt.random(min: 1, max: 2)*2);
         matrixByRow[y][x] = showNum
-        let grid = Grid(row: xmap(x), column: ymap(y), showNum: showNum).addTo(self)
+        let grid = Grid(row: Matrix.xmap(x), column: Matrix.ymap(y), showNum: showNum).addTo(self)
         grids[grid] = [y,x]
-    }
-    
-    func ymap(key : Int) -> Int{
-        let dic = [0 : 2, 1 : 1, 2 : -1, 3 : -2]
-        return dic[key]!
-    }
-    
-    func xmap(key : Int) -> Int{
-        let dic = [0 : -2, 1 : -1, 2 : 1, 3 : 2]
-        return dic[key]!
     }
     
     func getEmptyMatrix() -> [[UInt]]{
@@ -219,14 +227,29 @@ private extension Matrix{
             let i = position[0]
             let j = position[1]
             let actionCode = actionMatrix[i][j]
+            print("action code:",actionCode)
             if actionCode < 0{//move and disappear
                 let moveDistance = -1 - actionCode
-                //TODO
-                grid.moveByDirection(curDirection, distance: moveDistance)
+                if moveDistance > 0{
+                    let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
+                    grid.node.runAction(SKAction.sequence([moveAction,SKAction.removeFromParent()]))
+                }else{
+                    grid.disappear()
+                }
             }else if actionCode > 0 && actionCode<5 { // just move
-                
+                let moveDistance = actionCode
+                let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
+                grid.node.runAction(moveAction)
             }else if actionCode > 9{//move and duoble
-                
+                let moveDistance = actionCode%10;
+//                let delay = (actionCode-actionCode%10)/10-1;
+                if moveDistance > 0{
+                    let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
+                    grid.node.runAction(moveAction)
+                }
+                grid.doubled()
+//                grid.node.runAction(SKAction.sequence([SKAction.waitForDuration(NSTimeInterval(delay)),
+//                    SKAction.performSelector(Selector("doubled"), onTarget: self)]))
             }
         }
     }
