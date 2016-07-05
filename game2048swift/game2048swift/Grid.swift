@@ -15,6 +15,7 @@ func ==(lhs: Grid, rhs: Grid) -> Bool {
 }
 
 class Grid {
+    let id : Int
     var row : Int
     var column : Int
     var number : UInt
@@ -25,6 +26,7 @@ class Grid {
     init(row : Int, column: Int, showNum: UInt){
         self.row = row
         self.column = column
+        self.id = Int(NSDate().timeIntervalSince1970) * 100 + row*10 + column
         self.number = showNum
         self.node = createNode()
     }
@@ -58,12 +60,7 @@ class Grid {
         default: break
         }
         let targetPosition = getPosition(row, column: column)
-        return SKAction.moveTo(targetPosition, duration: 0.5)
-    }
-    
-    func moveTo(targetRow : Int, targetColomn: Int){
-        let targetPosition = getPosition(targetRow, column: targetColomn)
-        self.node.runAction(SKAction.moveTo(targetPosition, duration: 0.5))
+        return SKAction.moveTo(targetPosition, duration: 0.15 * Double(distance))
     }
     
     func doubled(){
@@ -143,7 +140,7 @@ private extension Grid {
 extension Grid : Hashable{
     var hashValue : Int {
         get{
-            return self.row * 10 + self.column
+            return self.id
         }
     }
 }

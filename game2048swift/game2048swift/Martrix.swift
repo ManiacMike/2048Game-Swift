@@ -34,6 +34,18 @@ class Matrix{
         addNumberInSpace()
     }
     
+    func stepGame(){
+        let step =  SKAction.sequence(
+            [
+                SKAction.waitForDuration(0.45),
+                SKAction.runBlock {
+                    self.addNumberInSpace()
+                }
+            ]
+        )
+        self.node.runAction(step)
+    }
+    
     func move(direction : SlideDirection) -> [[Int]]{
         
         curDirection = direction
@@ -75,35 +87,12 @@ class Matrix{
         default: break
         }
         
-        print(actionMatrix)
+        print("移动后的矩阵：",matrixByRow)
+        print("action矩阵：",actionMatrix)
         self.runActions(actionMatrix)
         return actionMatrix
     }
-}
-
-extension Matrix{
-    static func ymap(key : Int) -> Int{
-        let dic = [0 : 2, 1 : 1, 2 : -1, 3 : -2]
-        return dic[key]!
-    }
     
-    static func xmap(key : Int) -> Int{
-        let dic = [0 : -2, 1 : -1, 2 : 1, 3 : 2]
-        return dic[key]!
-    }
-    
-    static func ymapReverse(column : Int) -> Int{
-        let dic = [2 : 1, 1 : 1, -1 : 2, -2 : 3]
-        return dic[column]!
-    }
-    
-    static func xmapReverse(row : Int) -> Int{
-        let dic = [-2 : 0, -1 : 1, 1 : 2, 2 : 3]
-        return dic[row]!
-    }
-}
-
-private extension Matrix{
     func addNumberInSpace(){
         var spaceFlag = [[String : Int]]()
         for (i, row) in matrixByRow.enumerate() {
@@ -122,6 +111,32 @@ private extension Matrix{
         let grid = Grid(row: Matrix.xmap(x), column: Matrix.ymap(y), showNum: showNum).addTo(self)
         grids[grid] = [y,x]
     }
+}
+
+extension Matrix{
+    static func ymap(y : Int) -> Int{
+        let dic = [0 : 2, 1 : 1, 2 : -1, 3 : -2]
+        return dic[y]!
+    }
+    
+    static func xmap(x : Int) -> Int{
+        let dic = [0 : -2, 1 : -1, 2 : 1, 3 : 2]
+        return dic[x]!
+    }
+    
+    static func ymapReverse(column : Int) -> Int{
+        let dic = [2 : 0, 1 : 1, -1 : 2, -2 : 3]
+        return dic[column]!
+    }
+    
+    static func xmapReverse(row : Int) -> Int{
+        let dic = [-2 : 0, -1 : 1, 1 : 2, 2 : 3]
+        return dic[row]!
+    }
+}
+
+private extension Matrix{
+    
     
     func getEmptyMatrix() -> [[UInt]]{
         let matrix = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
@@ -197,7 +212,6 @@ private extension Matrix{
             actions.append(action);
         }
         var returnActionCodes = [Int](count : 4,repeatedValue : 0)
-        print(actions)
         for i in 0...3 {
             var action = actions[i]
             if action[0] == 0 {
@@ -223,6 +237,7 @@ private extension Matrix{
     }
     
     func runActions(actionMatrix : [[Int]]){
+        var gridToDel:[Grid] = [Grid]()
         for (grid, position) in grids {
             let i = position[0]
             let j = position[1]
@@ -236,21 +251,34 @@ private extension Matrix{
                 }else{
                     grid.disappear()
                 }
+                gridToDel.append(grid)
             }else if actionCode > 0 && actionCode<5 { // just move
                 let moveDistance = actionCode
                 let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
                 grid.node.runAction(moveAction)
+                grids[grid] = [Matrix.ymapReverse(grid.column),Matrix.xmapReverse(grid.row)]
             }else if actionCode > 9{//move and duoble
                 let moveDistance = actionCode%10;
-//                let delay = (actionCode-actionCode%10)/10-1;
+                let delay = (actionCode-actionCode%10)/10-1;
                 if moveDistance > 0{
                     let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
                     grid.node.runAction(moveAction)
                 }
-                grid.doubled()
-//                grid.node.runAction(SKAction.sequence([SKAction.waitForDuration(NSTimeInterval(delay)),
-//                    SKAction.performSelector(Selector("doubled"), onTarget: self)]))
+                grids[grid] = [Matrix.ymapReverse(grid.column),Matrix.xmapReverse(grid.row)]
+                let double =  SKAction.sequence(
+                    [
+                        SKAction.waitForDuration(Double(delay) * 0.15),
+                        SKAction.runBlock {
+                            grid.doubled()
+                        },
+                    ]
+                )
+                grid.node.runAction(double)
             }
         }
+        for grid in gridToDel {
+            grids.removeValueForKey(grid)
+        }
+        
     }
 }

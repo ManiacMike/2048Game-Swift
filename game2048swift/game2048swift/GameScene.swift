@@ -36,8 +36,6 @@ class GameScene: SKScene {
         
         matrix.addTo(screenNode)
         matrix.startGame()
-//        let a = Grid(row: 1, column: 1 , showNum: 2).addTo(matrix)
-//        a.disappear()
         self.addChild(screenNode)
     }
     
@@ -67,7 +65,8 @@ class GameScene: SKScene {
         }
         print(direction)
         if direction != .Invalid{
-            print(matrix.move(direction))
+            matrix.move(direction)
+            matrix.stepGame()
         }
     }
     
