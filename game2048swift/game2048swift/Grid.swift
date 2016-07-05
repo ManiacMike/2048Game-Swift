@@ -64,6 +64,10 @@ class Grid {
         self.node.childNodeWithName("text")?.removeFromParent()
         let title = getTextNode(self.number)
         node.addChild(title)
+        node.runAction(SKAction.sequence([
+            SKAction.scaleTo(1.2, duration: 0.1),
+            SKAction.scaleTo(1, duration: 0.1)
+            ]))
         self.node.color = getBlockColor()
     }
     
