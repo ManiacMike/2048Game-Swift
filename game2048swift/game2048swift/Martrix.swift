@@ -109,7 +109,7 @@ class Matrix{
         let x = spaceFlag[randNum]["x"]!
         let showNum = UInt(UInt.random(min: 1, max: 3)*2);
         matrixByRow[y][x] = showNum
-        let grid = Grid(row: Matrix.xmap(x), column: Matrix.ymap(y), showNum: showNum).addTo(self)
+        let grid = Grid(row: x, column:y, showNum: showNum).addTo(self)
         grids[grid] = [y,x]
     }
 }
@@ -123,16 +123,6 @@ extension Matrix{
     static func xmap(x : Int) -> Int{
         let dic = [0 : -2, 1 : -1, 2 : 1, 3 : 2]
         return dic[x]!
-    }
-    
-    static func ymapReverse(column : Int) -> Int{
-        let dic = [2 : 0, 1 : 1, -1 : 2, -2 : 3]
-        return dic[column]!
-    }
-    
-    static func xmapReverse(row : Int) -> Int{
-        let dic = [-2 : 0, -1 : 1, 1 : 2, 2 : 3]
-        return dic[row]!
     }
 }
 
@@ -257,15 +247,16 @@ private extension Matrix{
                 let moveDistance = actionCode
                 let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
                 grid.node.runAction(moveAction)
-                grids[grid] = [Matrix.ymapReverse(grid.column),Matrix.xmapReverse(grid.row)]
-            }else if actionCode > 9{//move and duoble
+                grids[grid] = [grid.column,grid.row]
+            }else if actionCode > 9{//move and double
                 let moveDistance = actionCode%10;
                 let delay = (actionCode-actionCode%10)/10-1;
                 if moveDistance > 0{
                     let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
                     grid.node.runAction(moveAction)
                 }
-                grids[grid] = [Matrix.ymapReverse(grid.column),Matrix.xmapReverse(grid.row)]
+                print(moveDistance,"|",delay)
+                grids[grid] = [grid.column,grid.row]
                 let double =  SKAction.sequence(
                     [
                         SKAction.waitForDuration(Double(delay) * gridInterval),

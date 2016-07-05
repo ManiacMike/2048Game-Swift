@@ -46,17 +46,13 @@ class Grid {
         
         switch direction {
         case .Up:
-            let y = Matrix.ymapReverse(column) - distance
-            column = Matrix.ymap(y)
+            column = column - distance
         case .Down:
-            let y = Matrix.ymapReverse(column) + distance
-            column = Matrix.ymap(y)
+            column = column + distance
         case .Left:
-            let x = Matrix.xmapReverse(row) - distance
-            row = Matrix.xmap(x)
+            row = row - distance
         case .Right:
-            let x = Matrix.xmapReverse(row) + distance
-            row = Matrix.xmap(x)
+            row = row + distance
         default: break
         }
         let targetPosition = getPosition(row, column: column)
@@ -120,8 +116,18 @@ private extension Grid {
     }
     
     func getPosition(row : Int, column: Int) -> CGPoint{
-        let x = (gridWidth + 14) * CGFloat(((row > 0) ?(Float(row) - 0.5): (Float(row) + 0.5)))
-        let y = (gridWidth + 14) * CGFloat(((column > 0) ?(Float(column) - 0.5): (Float(column) + 0.5)))
+        
+        let rowRelative = {(index :Int) -> Int in
+            let dic = [0 : -2, 1 : -1, 2 : 1, 3 : 2]
+            return dic[index]!
+        }(row)
+        let columnRelative = {(index :Int) -> Int in
+            let dic = [0 : 2, 1 : 1, 2 : -1, 3 : -2]
+            return dic[index]!
+        }(column)
+        
+        let x = (gridWidth + 14) * CGFloat(((rowRelative > 0) ?(Float(rowRelative) - 0.5): (Float(rowRelative) + 0.5)))
+        let y = (gridWidth + 14) * CGFloat(((columnRelative > 0) ?(Float(columnRelative) - 0.5): (Float(columnRelative) + 0.5)))
         return CGPointMake(x,y)
     }
     
