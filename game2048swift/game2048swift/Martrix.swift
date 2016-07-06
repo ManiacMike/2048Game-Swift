@@ -58,14 +58,14 @@ class Matrix{
         
         curDirection = direction
         
-        var calMatrix : [[UInt]] = getEmptyMatrix()
+        var calMatrix : [[UInt]] = Matrix.getEmptyMatrix()
         switch direction {
         case .Up:
-            calMatrix = transferMatrix(matrixByRow)
+            calMatrix = Matrix.transferMatrix(matrixByRow)
         case .Down:
-            calMatrix = reverseMatrix(transferMatrix(matrixByRow))
+            calMatrix = Matrix.reverseMatrix(Matrix.transferMatrix(matrixByRow))
         case .Right:
-            calMatrix = reverseMatrix(matrixByRow);
+            calMatrix = Matrix.reverseMatrix(matrixByRow);
         case .Left:
             calMatrix = matrixByRow
         default: break
@@ -82,14 +82,14 @@ class Matrix{
         
         switch direction {
         case .Up:
-            matrixByRow = transferMatrix(newMatrix)
-            actionMatrix = transferMatrix(actionMatrix)
+            matrixByRow = Matrix.transferMatrix(newMatrix)
+            actionMatrix = Matrix.transferMatrix(actionMatrix)
         case .Down:
-            matrixByRow = transferMatrix(reverseMatrix(newMatrix))
-            actionMatrix = transferMatrix(reverseMatrix(actionMatrix))
+            matrixByRow = Matrix.transferMatrix(Matrix.reverseMatrix(newMatrix))
+            actionMatrix = Matrix.transferMatrix(Matrix.reverseMatrix(actionMatrix))
         case .Right:
-            matrixByRow = reverseMatrix(newMatrix)
-            actionMatrix = reverseMatrix(actionMatrix)
+            matrixByRow = Matrix.reverseMatrix(newMatrix)
+            actionMatrix = Matrix.reverseMatrix(actionMatrix)
         case .Left:
             matrixByRow = newMatrix
         default: break
@@ -110,21 +110,39 @@ class Matrix{
 }
 
 extension Matrix{
-    static func ymap(y : Int) -> Int{
-        let dic = [0 : 2, 1 : 1, 2 : -1, 3 : -2]
-        return dic[y]!
+    static func getEmptyMatrix<T>() -> [[T]]{
+        let matrix = [[T]]()
+        return matrix
     }
     
-    static func xmap(x : Int) -> Int{
-        let dic = [0 : -2, 1 : -1, 2 : 1, 3 : 2]
-        return dic[x]!
+    static func reverseMatrix<T>(inputMatrix : [[T]]) -> [[T]]{
+        var newMatrix : [[T]] = inputMatrix
+        for i in 0...3{
+            for j in 0...3{
+                newMatrix[i][j] = inputMatrix[i][3-j];
+            }
+        }
+        return newMatrix;
+    }
+    
+    static func transferMatrix<T>(inputMatrix : [[T]]) -> [[T]]{
+        var newMatrix : [[T]] = inputMatrix
+        for i in 0...3{
+            for j in 0...3{
+                newMatrix[j][i] = inputMatrix[i][j];
+            }
+        }
+        return newMatrix;
     }
 }
 
 private extension Matrix{
     
-    func addNumberInSpace(){
+    func addNumberInSpace() -> Bool{
         let spaceFlag = getSpaceFlag()
+        if spaceFlag.count == 0{
+            return false
+        }
         let randNum = Int(UInt.random(min: 0, max: UInt(spaceFlag.count)))
         let y = spaceFlag[randNum]["y"]!
         let x = spaceFlag[randNum]["x"]!
@@ -132,6 +150,7 @@ private extension Matrix{
         matrixByRow[y][x] = showNum
         let grid = Grid(row: x, column:y, showNum: showNum).addTo(self)
         grids[grid] = [y,x]
+        return true
     }
     
     func getSpaceFlag() -> [[String : Int]]{
@@ -145,57 +164,6 @@ private extension Matrix{
             }
         }
         return spaceFlag
-    }
-    
-    func getEmptyMatrix() -> [[UInt]]{
-        let matrix = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
-        return matrix
-    }
-    
-    func reverseMatrix(inputMatrix : [[UInt]]) -> [[UInt]]{
-        var newMatrix : [[UInt]] = getEmptyMatrix()
-        for i in 0...3{
-            for j in 0...3{
-                newMatrix[i][j] = inputMatrix[i][3-j];
-            }
-        }
-        return newMatrix;
-    }
-    
-    func transferMatrix(inputMatrix : [[UInt]]) -> [[UInt]]{
-        var newMatrix : [[UInt]] = getEmptyMatrix()
-        for i in 0...3{
-            for j in 0...3{
-                newMatrix[j][i] = inputMatrix[i][j];
-            }
-        }
-        return newMatrix;
-    }
-    
-    //TODO 使用范型解决
-    func getEmptyMatrix() -> [[GridAction]]{
-        let matrix = [[GridAction]](count :4, repeatedValue: [GridAction](count :4, repeatedValue: GridAction.Still))
-        return matrix
-    }
-    
-    func reverseMatrix(inputMatrix : [[GridAction]]) -> [[GridAction]]{
-        var newMatrix  : [[GridAction]] = getEmptyMatrix()
-        for i in 0...3{
-            for j in 0...3{
-                newMatrix[i][j] = inputMatrix[i][3-j];
-            }
-        }
-        return newMatrix;
-    }
-    
-    func transferMatrix(inputMatrix : [[GridAction]]) -> [[GridAction]]{
-        var newMatrix : [[GridAction]] = getEmptyMatrix()
-        for i in 0...3{
-            for j in 0...3{
-                newMatrix[j][i] = inputMatrix[i][j];
-            }
-        }
-        return newMatrix;
     }
     
     //返回动作和组合后的顺序，"重力面"在前 [2,2,2,0]  ->   [4,2,0,0]
