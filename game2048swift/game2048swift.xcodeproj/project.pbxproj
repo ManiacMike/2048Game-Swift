@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		270F9D401D2D3F24006DF448 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270F9D3F1D2D3F24006DF448 /* MenuViewController.swift */; };
 		279802AB1D27A30C005DE9D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279802AA1D27A30C005DE9D9 /* AppDelegate.swift */; };
 		279802AD1D27A30C005DE9D9 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 279802AC1D27A30C005DE9D9 /* GameScene.sks */; };
 		279802AF1D27A30C005DE9D9 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279802AE1D27A30C005DE9D9 /* GameScene.swift */; };
@@ -39,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		270F9D3F1D2D3F24006DF448 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MenuViewController.swift; path = ../MenuViewController.swift; sourceTree = "<group>"; };
 		279802A71D27A30C005DE9D9 /* game2048swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = game2048swift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		279802AA1D27A30C005DE9D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		279802AC1D27A30C005DE9D9 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -107,6 +109,7 @@
 		279802A91D27A30C005DE9D9 /* game2048swift */ = {
 			isa = PBXGroup;
 			children = (
+				270F9D3F1D2D3F24006DF448 /* MenuViewController.swift */,
 				279802AA1D27A30C005DE9D9 /* AppDelegate.swift */,
 				279802AC1D27A30C005DE9D9 /* GameScene.sks */,
 				279802AE1D27A30C005DE9D9 /* GameScene.swift */,
@@ -276,6 +279,7 @@
 				279802AF1D27A30C005DE9D9 /* GameScene.swift in Sources */,
 				279802B11D27A30C005DE9D9 /* GameViewController.swift in Sources */,
 				279802AB1D27A30C005DE9D9 /* AppDelegate.swift in Sources */,
+				270F9D401D2D3F24006DF448 /* MenuViewController.swift in Sources */,
 				279802DF1D27FA13005DE9D9 /* Grid.swift in Sources */,
 				279802DD1D27F9EF005DE9D9 /* Martrix.swift in Sources */,
 				279802E31D290AD9005DE9D9 /* Utils.swift in Sources */,

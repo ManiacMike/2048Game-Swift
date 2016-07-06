@@ -1,0 +1,37 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "7D667A3E83ABFB9967039ADAACC8F6025AA90FD3",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "7D667A3E83ABFB9967039ADAACC8F6025AA90FD3" : 0,
+    "413D2D8C3A3651DF80AC494F8683B92AA5E1ADEC" : 0,
+    "BBD4635DB98F70F19654ACA835A0B4F8B0F7F75E" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "73F449C1-7E69-4C9E-AE96-F7AFC5A893E8",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "7D667A3E83ABFB9967039ADAACC8F6025AA90FD3" : "2048swift\/",
+    "413D2D8C3A3651DF80AC494F8683B92AA5E1ADEC" : "ChineseZodiac\/",
+    "BBD4635DB98F70F19654ACA835A0B4F8B0F7F75E" : "FlappySwift\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "2048swift",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "2048swift.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/JakeLin\/ChineseZodiac.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "413D2D8C3A3651DF80AC494F8683B92AA5E1ADEC"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/ManiacMike\/2048Game-Swift.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "7D667A3E83ABFB9967039ADAACC8F6025AA90FD3"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/gscalzo\/FlappySwift.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "BBD4635DB98F70F19654ACA835A0B4F8B0F7F75E"
+    }
+  ]
+}

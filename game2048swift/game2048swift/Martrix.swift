@@ -24,6 +24,7 @@ class Matrix{
     var matrixByRow = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
     var grids = [Grid:[Int]]()
     var curDirection : SlideDirection = .Invalid
+    var gameOn = true
     
     init(){
         let gameArea = SKSpriteNode(imageNamed: "2048bg")
@@ -42,16 +43,17 @@ class Matrix{
         addNumberInSpace()
     }
     
-    func stepGame(){
+    func stepGame() -> Bool{
         let step =  SKAction.sequence(
             [
                 SKAction.waitForDuration(gridInterval * 3),
                 SKAction.runBlock {
-                    self.addNumberInSpace()
+                    self.gameOn = self.addNumberInSpace()
                 }
             ]
         )
         self.node.runAction(step)
+        return gameOn
     }
     
     func move(direction : SlideDirection){

@@ -7,6 +7,7 @@
 //
 
 import SpriteKit
+import SIAlertView
 
 enum SlideDirection {
     case Left
@@ -27,6 +28,9 @@ class GameScene: SKScene {
     private var touchBeginPoint : CGPoint = CGPointMake(0, 0)
     private var touchEnable : Bool = true
     lazy private var matrix = Matrix()
+    
+    var onPlayAgainPressed:(()->Void)!
+    var onCancelPressed:(()->Void)!
     
     override func didMoveToView(view: SKView) {
         //        print(UIFont.familyNames())
@@ -69,7 +73,10 @@ class GameScene: SKScene {
         if direction != .Invalid{
             touchEnable = false
             matrix.move(direction)
-            matrix.stepGame()
+            let gameOn = matrix.stepGame()
+            if gameOn == false{
+                askToPlayAgain()
+            }
             let step =  SKAction.sequence(
                 [
                     SKAction.waitForDuration(gridInterval * 3 + 0.5),
@@ -98,5 +105,17 @@ private extension GameScene{
         title.zPosition = 2
         title.fontColor = UIColor.blackColor()
         screenNode.addChild(title)
+    }
+}
+
+
+// Private
+private extension GameScene {
+    func askToPlayAgain() {
+        let alertView = SIAlertView(title: "Ouch!!", andMessage: "Congratulations! Your score is . Play again?")
+        
+        alertView.addButtonWithTitle("OK", type: .Default) { _ in self.onPlayAgainPressed() }
+        alertView.addButtonWithTitle("Cancel", type: .Default) { _ in self.onCancelPressed() }
+        alertView.show()
     }
 }
