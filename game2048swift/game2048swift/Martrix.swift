@@ -11,6 +11,13 @@ import SpriteKit
 
 let gridInterval : Double = 0.15 //移动一个格子的时间
 
+enum GridAction {
+    case Move(Int)
+    case Disapear(Int)
+    case Duoble(Int,Int)
+    case Still
+}
+
 class Matrix{
     var node : SKSpriteNode!
     private var parentNode: SKSpriteNode!
@@ -47,7 +54,7 @@ class Matrix{
         self.node.runAction(step)
     }
     
-    func move(direction : SlideDirection) -> [[Int]]{
+    func move(direction : SlideDirection){
         
         curDirection = direction
         
@@ -65,12 +72,12 @@ class Matrix{
         }
         
         var newMatrix = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
-        var actionMatrix = [[Int]](count :4, repeatedValue: [Int](count :4, repeatedValue: 0))
+        var actionMatrix = [[GridAction]]()
         
         for i in  0...3{
             let orderLine = getOrderLine(calMatrix[i])
             newMatrix[i] = orderLine.newline
-            actionMatrix[i] = orderLine.returnActionCodes
+            actionMatrix.append(orderLine.returnActionCodes)
         }
         
         switch direction {
@@ -90,28 +97,16 @@ class Matrix{
         
         print("移动后的矩阵：",matrixByRow)
         print("action矩阵：",actionMatrix)
-        self.runActions(actionMatrix)
-        return actionMatrix
+        do {
+            try runActions(actionMatrix)
+        } catch GameError.WrongNumGrid {
+            print("Invalid NumGrid.")
+        } catch {
+            
+        }
+        
     }
     
-    func addNumberInSpace(){
-        var spaceFlag = [[String : Int]]()
-        for (i, row) in matrixByRow.enumerate() {
-            for (j,num) in row.enumerate(){
-                if num == 0{
-                    let flag = ["y":i , "x":j]
-                    spaceFlag.append(flag)
-                }
-            }
-        }
-        let randNum = Int(UInt.random(min: 0, max: UInt(spaceFlag.count)))
-        let y = spaceFlag[randNum]["y"]!
-        let x = spaceFlag[randNum]["x"]!
-        let showNum = UInt(UInt.random(min: 1, max: 3)*2);
-        matrixByRow[y][x] = showNum
-        let grid = Grid(row: x, column:y, showNum: showNum).addTo(self)
-        grids[grid] = [y,x]
-    }
 }
 
 extension Matrix{
@@ -128,6 +123,29 @@ extension Matrix{
 
 private extension Matrix{
     
+    func addNumberInSpace(){
+        let spaceFlag = getSpaceFlag()
+        let randNum = Int(UInt.random(min: 0, max: UInt(spaceFlag.count)))
+        let y = spaceFlag[randNum]["y"]!
+        let x = spaceFlag[randNum]["x"]!
+        let showNum = UInt(UInt.random(min: 1, max: 3)*2);
+        matrixByRow[y][x] = showNum
+        let grid = Grid(row: x, column:y, showNum: showNum).addTo(self)
+        grids[grid] = [y,x]
+    }
+    
+    func getSpaceFlag() -> [[String : Int]]{
+        var spaceFlag = [[String : Int]]()
+        for (i, row) in matrixByRow.enumerate() {
+            for (j,num) in row.enumerate(){
+                if num == 0{
+                    let flag = ["y":i , "x":j]
+                    spaceFlag.append(flag)
+                }
+            }
+        }
+        return spaceFlag
+    }
     
     func getEmptyMatrix() -> [[UInt]]{
         let matrix = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
@@ -155,13 +173,13 @@ private extension Matrix{
     }
     
     //TODO 使用范型解决
-    func getEmptyMatrix() -> [[Int]]{
-        let matrix = [[Int]](count :4, repeatedValue: [Int](count :4, repeatedValue: 0))
+    func getEmptyMatrix() -> [[GridAction]]{
+        let matrix = [[GridAction]](count :4, repeatedValue: [GridAction](count :4, repeatedValue: GridAction.Still))
         return matrix
     }
     
-    func reverseMatrix(inputMatrix : [[Int]]) -> [[Int]]{
-        var newMatrix  : [[Int]] = getEmptyMatrix()
+    func reverseMatrix(inputMatrix : [[GridAction]]) -> [[GridAction]]{
+        var newMatrix  : [[GridAction]] = getEmptyMatrix()
         for i in 0...3{
             for j in 0...3{
                 newMatrix[i][j] = inputMatrix[i][3-j];
@@ -170,8 +188,8 @@ private extension Matrix{
         return newMatrix;
     }
     
-    func transferMatrix(inputMatrix : [[Int]]) -> [[Int]]{
-        var newMatrix : [[Int]] = getEmptyMatrix()
+    func transferMatrix(inputMatrix : [[GridAction]]) -> [[GridAction]]{
+        var newMatrix : [[GridAction]] = getEmptyMatrix()
         for i in 0...3{
             for j in 0...3{
                 newMatrix[j][i] = inputMatrix[i][j];
@@ -180,8 +198,8 @@ private extension Matrix{
         return newMatrix;
     }
     
-    //返回动作和组合后的顺序，"重力面"在前
-    func getOrderLine(line : [UInt]) -> (newline : [UInt],returnActionCodes : [Int]){
+    //返回动作和组合后的顺序，"重力面"在前 [2,2,2,0]  ->   [4,2,0,0]
+    func getOrderLine(line : [UInt]) -> (newline : [UInt],returnActionCodes : [GridAction]){
         var drop = 0,lastNotZeroIndex = -1
         var actions = [[Int]]()
         var newline = [UInt](count :4, repeatedValue: 0)
@@ -192,24 +210,27 @@ private extension Matrix{
                     action = [1, drop]
                     actions[lastNotZeroIndex][0] = 2//前面的数标记为double
                     drop += 1
+                    lastNotZeroIndex = -1
                 }else{
                     action = [0, drop]
+                    lastNotZeroIndex = i
                 }
-                lastNotZeroIndex = i
             }else if (line[i] == 0){
                 drop += 1
                 action = [0,0]
             }
             actions.append(action);
         }
-        var returnActionCodes = [Int](count : 4,repeatedValue : 0)
+        var returnActionCodes = [GridAction](count : 4,repeatedValue : GridAction.Still)
         for i in 0...3 {
             var action = actions[i]
             if action[0] == 0 {
-                returnActionCodes[i] = action[1]
+                if action[1] > 0{
+                    returnActionCodes[i] = GridAction.Move(action[1])
+                }
                 newline[i-action[1]] = line[i];
             }else if (action[0] == 1){
-                returnActionCodes[i] = -1 - action[1];
+                returnActionCodes[i] = GridAction.Disapear(action[1])
             }else{
                 //get delay
                 var delay :Int = 0;
@@ -219,7 +240,7 @@ private extension Matrix{
                         break;
                     }
                 }
-                returnActionCodes[i] = 10 + action[1] + delay*10;
+                returnActionCodes[i] = GridAction.Duoble(action[1], delay)
                 newline[i-action[1]] = line[i]*2;
             }
         }
@@ -227,15 +248,20 @@ private extension Matrix{
         return (newline, returnActionCodes)
     }
     
-    func runActions(actionMatrix : [[Int]]){
+    func runActions(actionMatrix : [[GridAction]]) throws{
         var gridToDel:[Grid] = [Grid]()
         for (grid, position) in grids {
             let i = position[0]
             let j = position[1]
             let actionCode = actionMatrix[i][j]
             print("action code:",actionCode)
-            if actionCode < 0{//move and disappear
-                let moveDistance = -1 - actionCode
+            switch actionCode {
+            case .Move(let moveDistance):
+                let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
+                grid.node.runAction(moveAction)
+                grids[grid] = [grid.column,grid.row]
+                
+            case .Disapear(let moveDistance):
                 if moveDistance > 0{
                     let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
                     grid.node.runAction(SKAction.sequence([moveAction,SKAction.removeFromParent()]))
@@ -243,14 +269,8 @@ private extension Matrix{
                     grid.disappear()
                 }
                 gridToDel.append(grid)
-            }else if actionCode > 0 && actionCode<5 { // just move
-                let moveDistance = actionCode
-                let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
-                grid.node.runAction(moveAction)
-                grids[grid] = [grid.column,grid.row]
-            }else if actionCode > 9{//move and double
-                let moveDistance = actionCode%10;
-                let delay = (actionCode-actionCode%10)/10-1;
+                
+            case .Duoble(let moveDistance, let delay):
                 if moveDistance > 0{
                     let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
                     grid.node.runAction(moveAction)
@@ -266,11 +286,18 @@ private extension Matrix{
                     ]
                 )
                 grid.node.runAction(double)
+            default : break
             }
+            
         }
+        
         for grid in gridToDel {
             grids.removeValueForKey(grid)
         }
+        if grids.count + getSpaceFlag().count != 16 {
+            throw GameError.WrongNumGrid
+        }
+        
         
     }
 }

@@ -18,12 +18,14 @@ enum SlideDirection {
 
 enum GameError: ErrorType {
     case InvalidDirection
+    case WrongNumGrid
     case OtherError
 }
 
 class GameScene: SKScene {
     private var screenNode : SKSpriteNode!
     private var touchBeginPoint : CGPoint = CGPointMake(0, 0)
+    private var touchEnable : Bool = true
     lazy private var matrix = Matrix()
     
     override func didMoveToView(view: SKView) {
@@ -65,8 +67,18 @@ class GameScene: SKScene {
         }
         print(direction)
         if direction != .Invalid{
+            touchEnable = false
             matrix.move(direction)
             matrix.stepGame()
+            let step =  SKAction.sequence(
+                [
+                    SKAction.waitForDuration(gridInterval * 3 + 0.5),
+                    SKAction.runBlock {
+                        self.touchEnable = true
+                    }
+                ]
+            )
+            screenNode.runAction(step)
         }
     }
     
