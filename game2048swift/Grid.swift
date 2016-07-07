@@ -142,7 +142,7 @@ private extension Grid {
     func getTextNode(showNum : UInt) -> SKLabelNode{
         let title = SKLabelNode(fontNamed: "Clear Sans")
         title.text = String(showNum)
-        title.fontSize = 40 * resourceScale
+        title.fontSize = 53 * resourceScale
         title.position = CGPointMake(0,-10)
         title.zPosition = 3
         title.fontColor = getFontColor(showNum)
