@@ -10,6 +10,7 @@ import Foundation
 import SpriteKit
 
 let gridInterval : Double = 0.15 //移动一个格子的时间
+var resourceScale : CGFloat = 1.0
 
 enum GridAction {
     case Move(Int)
@@ -27,9 +28,13 @@ class Matrix{
     var gameOn = true
     
     init(){
+        let gameAreaWidth = CGRectGetWidth(UIScreen.mainScreen().bounds) - 50
         let gameArea = SKSpriteNode(imageNamed: "2048bg")
+        let originalWidth = gameArea.size.width
         gameArea.zPosition = 1
+        gameArea.size = CGSizeMake(gameAreaWidth, gameAreaWidth)
         node = gameArea
+        resourceScale = gameAreaWidth / originalWidth
     }
     
     func addTo(parentNode: SKSpriteNode) -> Matrix {

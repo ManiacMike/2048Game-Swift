@@ -21,7 +21,8 @@ class Grid {
     var number : UInt
     var node : SKSpriteNode!
     private var parentNode: SKSpriteNode!
-    let gridWidth :CGFloat = 107
+    let gridWidth : CGFloat = 107 * resourceScale
+    let gridGap : CGFloat = 14 * resourceScale
     
     init(row : Int, column: Int, showNum: UInt){
         self.row = row
@@ -130,15 +131,15 @@ private extension Grid {
             return dic[index]!
         }(column)
         
-        let x = (gridWidth + 14) * CGFloat(((rowRelative > 0) ?(Float(rowRelative) - 0.5): (Float(rowRelative) + 0.5)))
-        let y = (gridWidth + 14) * CGFloat(((columnRelative > 0) ?(Float(columnRelative) - 0.5): (Float(columnRelative) + 0.5)))
+        let x = (gridWidth + gridGap) * CGFloat(((rowRelative > 0) ?(Float(rowRelative) - 0.5): (Float(rowRelative) + 0.5)))
+        let y = (gridWidth + gridGap) * CGFloat(((columnRelative > 0) ?(Float(columnRelative) - 0.5): (Float(columnRelative) + 0.5)))
         return CGPointMake(x,y)
     }
     
     func getTextNode(showNum : UInt) -> SKLabelNode{
         let title = SKLabelNode(fontNamed: "Clear Sans")
         title.text = String(showNum)
-        title.fontSize = 40
+        title.fontSize = 40 * resourceScale
         title.position = CGPointMake(0,-10)
         title.zPosition = 3
         title.fontColor = getFontColor(showNum)
