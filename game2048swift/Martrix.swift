@@ -54,6 +54,19 @@ class Matrix{
         self.addNumberInSpace()
     }
     
+    func initWithMatrix(matrix : [[UInt]]){
+        matrixByRow = matrix
+        for y in 0...3 {
+            for x in 0...3{
+                let showNum = matrixByRow[y][x]
+                if showNum != 0{
+                    let grid = Grid(row: x, column:y, showNum: showNum).addTo(self)
+                    grids[grid] = [y,x]
+                }
+            }
+        }
+    }
+    
     func move(direction : SlideDirection) -> (ifMoved : Bool,lastTime : Double){
         
         print("移动前的矩阵：",matrixByRow)
@@ -110,8 +123,16 @@ class Matrix{
     }
     
     func checkIfRight() throws{
+        for (grid, position) in grids {
+            let i = position[0]
+            let j = position[1]
+            let num = matrixByRow[i][j]
+            if num != grid.number {
+                throw GameError.WrongNumGrid
+            }
+        }
         if grids.count + getSpaceFlag().count != 16 {
-            throw GameError.InvalidDirection
+            throw GameError.WrongNumGrid
         }
     }
     
@@ -261,6 +282,8 @@ private extension Matrix{
                 grids[grid] = [grid.column,grid.row]
                 
             case .Disapear(let moveDistance):
+                print("delete",position,"|",grid.number,"|",grid.id)
+                
                 if moveDistance > 0{
                     let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
                     grid.node.runAction(SKAction.sequence(
@@ -284,11 +307,13 @@ private extension Matrix{
                 }
                 print(moveDistance,"|",delay)
                 grids[grid] = [grid.column,grid.row]
+                
+                //Block中是值拷贝
                 let double =  SKAction.sequence(
                     [
                         SKAction.waitForDuration(Double(delay) * gridInterval),
                         SKAction.runBlock {
-                            grid.doubled()
+                            self.grids[grid.doubled()] = [grid.column,grid.row]
                         },
                     ]
                 )

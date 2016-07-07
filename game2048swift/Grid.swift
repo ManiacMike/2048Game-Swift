@@ -60,7 +60,7 @@ class Grid {
         return SKAction.moveTo(targetPosition, duration: 0.15 * Double(distance))
     }
     
-    func doubled(){
+    func doubled() -> Grid{
         self.number *= 2
         if self.number > score {
             score = self.number
@@ -73,6 +73,7 @@ class Grid {
             SKAction.scaleTo(1, duration: 0.1)
             ]))
         self.node.color = getBlockColor()
+        return self
     }
     
     func disappear(){
