@@ -23,6 +23,7 @@ class Grid {
     private var parentNode: SKSpriteNode!
     let gridWidth : CGFloat = 107 * resourceScale
     let gridGap : CGFloat = 14 * resourceScale
+    var toTeDeleted : Bool = false
     
     init(row : Int, column: Int, showNum: UInt){
         self.row = row
@@ -77,6 +78,7 @@ class Grid {
     }
     
     func disappear(){
+        self.toTeDeleted = true
         self.node.removeFromParent()
     }
 }

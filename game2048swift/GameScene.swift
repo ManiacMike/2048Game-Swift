@@ -41,8 +41,8 @@ class GameScene: SKScene {
         addTitle()
         
         matrix.addTo(screenNode)
-//        matrix.startGame()
-        matrix.initWithMatrix([[0, 2, 0, 0], [2, 4, 0, 0], [8, 2, 16, 0], [8, 32, 128, 32]])
+        matrix.startGame()
+//        matrix.initWithMatrix([[0, 2, 0, 0], [2, 4, 0, 0], [8, 2, 16, 0], [8, 32, 128, 32]])
         self.addChild(screenNode)
     }
     
@@ -86,16 +86,16 @@ class GameScene: SKScene {
                             do {
                                 try self.matrix.checkIfRight()
                             } catch GameError.WrongNumGrid {
-                                print("====Invalid NumGrid Start====")
-                                var gridMatrix = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
-                                 var gridIdMatrix = [[Int]](count :4, repeatedValue: [Int](count :4, repeatedValue: 0))
-                                for (grid, position) in self.matrix.grids {
-                                    gridMatrix[position[0]][position[1]] = grid.number
-                                    gridIdMatrix[position[0]][position[1]] = grid.id
-                                }
-                                print(gridMatrix)
-                                print(gridIdMatrix)
-                                print("====Invalid NumGrid End====")
+//                                print("====Invalid NumGrid Start====")
+//                                var gridMatrix = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
+//                                 var gridIdMatrix = [[Int]](count :4, repeatedValue: [Int](count :4, repeatedValue: 0))
+//                                for (grid, position) in self.matrix.grids {
+//                                    gridMatrix[position[0]][position[1]] = grid.number
+//                                    gridIdMatrix[position[0]][position[1]] = grid.id
+//                                }
+//                                print(gridMatrix)
+//                                print(gridIdMatrix)
+//                                print("====Invalid NumGrid End====")
                                 self.askToPlayAgain()
                             } catch {
                                 

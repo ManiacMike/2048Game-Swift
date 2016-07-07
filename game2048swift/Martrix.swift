@@ -24,7 +24,7 @@ class Matrix{
     var node : SKSpriteNode!
     private var parentNode: SKSpriteNode!
     var matrixByRow = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
-    var grids = [Grid:[Int]]()
+    var grids = [[Grid?]](count :4, repeatedValue: [Grid?](count :4, repeatedValue: nil))
     var curDirection : SlideDirection = .Invalid
     var gameOver = false
     
@@ -51,6 +51,7 @@ class Matrix{
     }
     
     func stepGame(){
+        self.updateGrids()
         self.addNumberInSpace()
     }
     
@@ -61,7 +62,7 @@ class Matrix{
                 let showNum = matrixByRow[y][x]
                 if showNum != 0{
                     let grid = Grid(row: x, column:y, showNum: showNum).addTo(self)
-                    grids[grid] = [y,x]
+                    grids[y][x] = grid
                 }
             }
         }
@@ -123,17 +124,17 @@ class Matrix{
     }
     
     func checkIfRight() throws{
-        for (grid, position) in grids {
-            let i = position[0]
-            let j = position[1]
-            let num = matrixByRow[i][j]
-            if num != grid.number {
-                throw GameError.WrongNumGrid
-            }
-        }
-        if grids.count + getSpaceFlag().count != 16 {
-            throw GameError.WrongNumGrid
-        }
+//        for (grid, position) in grids {
+//            let i = position[0]
+//            let j = position[1]
+//            let num = matrixByRow[i][j]
+//            if num != grid.number {
+//                throw GameError.WrongNumGrid
+//            }
+//        }
+//        if grids.count + getSpaceFlag().count != 16 {
+//            throw GameError.WrongNumGrid
+//        }
     }
     
 }
@@ -166,6 +167,21 @@ extension Matrix{
 }
 
 private extension Matrix{
+    
+    func updateGrids(){
+        var tmpGrids = [[Grid?]](count :4, repeatedValue: [Grid?](count :4, repeatedValue: nil))
+        for i in 0...3{
+            for j in 0...3{
+                if let grid = grids[i][j]{
+                    if(grid.toTeDeleted){
+                        continue
+                    }
+                    tmpGrids[grid.column][grid.row] = grid
+                }
+            }
+        }
+        grids = tmpGrids
+    }
     
     func getSpaceFlag() -> [[String : Int]]{
         var spaceFlag = [[String : Int]]()
@@ -212,7 +228,7 @@ private extension Matrix{
         matrixByRow[y][x] = showNum
         print("添加新数字",matrixByRow)
         let grid = Grid(row: x, column:y, showNum: showNum).addTo(self)
-        grids[grid] = [y,x]
+        grids[y][x] = grid
     }
     
     //返回动作和组合后的顺序，"重力面"在前 [2,2,2,0]  ->   [4,2,0,0]
@@ -264,64 +280,54 @@ private extension Matrix{
         
         return (newline, returnActionCodes)
     }
-    //[2,2,4,4]
-    //    [Disapear(1),
-    //    Duoble(1, 1),
-    //    Disapear(0),
-    //    Duoble(0, 0)],
+    
     func runActions(actionMatrix : [[GridAction]]){
-        for (grid, position) in grids {
-            let i = position[0]
-            let j = position[1]
-            let actionCode = actionMatrix[i][j]
-//            print("action code:",actionCode)
-            switch actionCode {
-            case .Move(let moveDistance):
-                let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
-                grid.node.runAction(moveAction)
-                grids[grid] = [grid.column,grid.row]
+        for i in 0...3 {
+            for j in 0...3{
+                if let grid = grids[i][j]{
                 
-            case .Disapear(let moveDistance):
-                print("delete",position,"|",grid.number,"|",grid.id)
-                
-                if moveDistance > 0{
-                    let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
-                    grid.node.runAction(SKAction.sequence(
-                        [
-                            moveAction,
-                            SKAction.runBlock {
-                                grid.disappear()
-                                self.grids.removeValueForKey(grid)
-                            },
-                        ]
-                        ))
-                }else{
-                    grid.disappear()
-                    self.grids.removeValueForKey(grid)
-                }
-                
-            case .Duoble(let moveDistance, let delay):
-                if moveDistance > 0{
-                    let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
-                    grid.node.runAction(moveAction)
-                }
-                print(moveDistance,"|",delay)
-                grids[grid] = [grid.column,grid.row]
-                
-                //Block中是值拷贝
-                let double =  SKAction.sequence(
-                    [
-                        SKAction.waitForDuration(Double(delay) * gridInterval),
-                        SKAction.runBlock {
-                            self.grids[grid.doubled()] = [grid.column,grid.row]
-                        },
-                    ]
-                )
-                grid.node.runAction(double)
-            default : break
+                    let actionCode = actionMatrix[i][j]
+                    switch actionCode {
+                    case .Move(let moveDistance):
+                        let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
+                        grid.node.runAction(moveAction)
+                        
+                    case .Disapear(let moveDistance):
+                        
+                        if moveDistance > 0{
+                            let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
+                            grid.node.runAction(SKAction.sequence(
+                                [
+                                    moveAction,
+                                    SKAction.runBlock {
+                                        grid.disappear()
+                                    },
+                                ]
+                                ))
+                        }else{
+                            grid.disappear()                        }
+                        
+                    case .Duoble(let moveDistance, let delay):
+                        if moveDistance > 0{
+                            let moveAction = grid.moveByDirection(curDirection, distance: moveDistance)
+                            grid.node.runAction(moveAction)
+                        }
+                        print(moveDistance,"|",delay)
+                        
+                        //Block中是值拷贝
+                        let double =  SKAction.sequence(
+                            [
+                                SKAction.waitForDuration(Double(delay) * gridInterval),
+                                SKAction.runBlock {
+                                    grid.doubled()
+                                },
+                            ]
+                        )
+                        grid.node.runAction(double)
+                    default : break
+                    }
+               }
             }
-            
         }
-        
     }
 }
