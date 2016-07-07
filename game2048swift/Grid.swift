@@ -62,6 +62,9 @@ class Grid {
     
     func doubled(){
         self.number *= 2
+        if self.number > score {
+            score = self.number
+        }
         self.node.childNodeWithName("text")?.removeFromParent()
         let title = getTextNode(self.number)
         node.addChild(title)

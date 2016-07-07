@@ -11,6 +11,7 @@ import SpriteKit
 
 let gridInterval : Double = 0.15 //移动一个格子的时间
 var resourceScale : CGFloat = 1.0
+var score : UInt = 2
 
 enum GridAction {
     case Move(Int)
@@ -25,7 +26,8 @@ class Matrix{
     var matrixByRow = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
     var grids = [Grid:[Int]]()
     var curDirection : SlideDirection = .Invalid
-    var gameOn = true
+    var gameOver = false
+    
     
     init(){
         let gameAreaWidth = CGRectGetWidth(UIScreen.mainScreen().bounds) - 50
@@ -48,20 +50,11 @@ class Matrix{
         addNumberInSpace()
     }
     
-    func stepGame() -> Bool{
-        let step =  SKAction.sequence(
-            [
-                SKAction.waitForDuration(gridInterval * 3),
-                SKAction.runBlock {
-                    self.gameOn = self.addNumberInSpace()
-                }
-            ]
-        )
-        self.node.runAction(step)
-        return gameOn
+    func stepGame(){
+        self.addNumberInSpace()
     }
     
-    func move(direction : SlideDirection){
+    func move(direction : SlideDirection) -> (ifMoved : Bool,lastTime : Double){
         
         curDirection = direction
         
@@ -112,6 +105,10 @@ class Matrix{
             
         }
         
+        if (getSpaceFlag().count == 1){
+            self.gameOver = true
+        }
+        return getActionsLastTime(actionMatrix)
     }
     
 }
@@ -145,11 +142,31 @@ extension Matrix{
 
 private extension Matrix{
     
-    func addNumberInSpace() -> Bool{
-        let spaceFlag = getSpaceFlag()
-        if spaceFlag.count == 0{
-            return false
+    //获取最长的action持续时间
+    func getActionsLastTime(actionMatrix : [[GridAction]]) -> (Bool, Double){
+        var longest : Int = 0
+        var ifMoved = false
+        for i in 0...3 {
+            for j in 0...3 {
+                switch actionMatrix[i][j] {
+                case .Move(let moveDistance):
+                    longest = moveDistance > longest ? moveDistance : longest
+                    ifMoved = true
+                case .Disapear(let moveDistance):
+                    longest = moveDistance > longest ? moveDistance : longest
+                    ifMoved = true
+                case .Duoble( _, let delay):
+                    longest = delay > longest ? delay : longest
+                    ifMoved = true
+                default : break
+                }
+            }
         }
+        return (ifMoved,Double(longest) * gridInterval)
+    }
+    
+    func addNumberInSpace(){
+        let spaceFlag = getSpaceFlag()
         let randNum = Int(UInt.random(min: 0, max: UInt(spaceFlag.count)))
         let y = spaceFlag[randNum]["y"]!
         let x = spaceFlag[randNum]["x"]!
@@ -157,7 +174,6 @@ private extension Matrix{
         matrixByRow[y][x] = showNum
         let grid = Grid(row: x, column:y, showNum: showNum).addTo(self)
         grids[grid] = [y,x]
-        return true
     }
     
     func getSpaceFlag() -> [[String : Int]]{

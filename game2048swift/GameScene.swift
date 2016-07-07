@@ -71,21 +71,24 @@ class GameScene: SKScene {
         }
         print(direction)
         if direction != .Invalid{
-            touchEnable = false
-            matrix.move(direction)
-            let gameOn = matrix.stepGame()
-            if gameOn == false{
-                askToPlayAgain()
+            let moveResult = matrix.move(direction)
+            let gameOver = matrix.gameOver
+            if gameOver == true{
+                self.askToPlayAgain()
             }
-            let step =  SKAction.sequence(
-                [
-                    SKAction.waitForDuration(gridInterval * 3 + 0.5),
-                    SKAction.runBlock {
-                        self.touchEnable = true
-                    }
-                ]
-            )
-            screenNode.runAction(step)
+            if moveResult.ifMoved == true {
+                touchEnable = false
+                let step =  SKAction.sequence(
+                    [
+                        SKAction.waitForDuration(moveResult.lastTime + 0.1), //等待move结束
+                        SKAction.runBlock {
+                            self.touchEnable = true
+                            self.matrix.stepGame()
+                        }
+                    ]
+                )
+                screenNode.runAction(step)
+            }
         }
     }
     
@@ -112,7 +115,7 @@ private extension GameScene{
 // Private
 private extension GameScene {
     func askToPlayAgain() {
-        let alertView = SIAlertView(title: "Ouch!!", andMessage: "Congratulations! Your score is . Play again?")
+        let alertView = SIAlertView(title: "Ouch!!", andMessage: "Congratulations! Your score is \(score). Play again?")
         
         alertView.addButtonWithTitle("OK", type: .Default) { _ in self.onPlayAgainPressed() }
         alertView.addButtonWithTitle("Cancel", type: .Default) { _ in self.onCancelPressed() }
