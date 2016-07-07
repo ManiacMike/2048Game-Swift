@@ -69,7 +69,6 @@ class GameScene: SKScene {
         }else if abx<aby && aby>100{//up or down
             direction = y>0 ? .Up : .Down
         }
-        print(direction)
         if direction != .Invalid{
             let moveResult = matrix.move(direction)
             let gameOver = matrix.gameOver
@@ -82,6 +81,21 @@ class GameScene: SKScene {
                     [
                         SKAction.waitForDuration(moveResult.lastTime + 0.1), //等待move结束
                         SKAction.runBlock {
+                            
+                            do {
+                                try self.matrix.checkIfRight()
+                            } catch GameError.WrongNumGrid {
+                                print("====Invalid NumGrid Start====")
+                                for (_, position) in self.matrix.grids {
+                                    print(position)
+                                }
+                                print("====Invalid NumGrid End====")
+                                return
+                            } catch {
+                                
+                            }
+
+                            
                             self.touchEnable = true
                             self.matrix.stepGame()
                         }
