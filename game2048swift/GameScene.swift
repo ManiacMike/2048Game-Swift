@@ -83,27 +83,20 @@ class GameScene: SKScene {
                         SKAction.waitForDuration(moveResult.lastTime + 0.1), //等待move结束
                         SKAction.runBlock {
                             print("时间：",moveResult.lastTime)
+                            
+                            self.touchEnable = true
+                            self.matrix.stepGame()
                             do {
                                 try self.matrix.checkIfRight()
                             } catch GameError.WrongNumGrid {
-//                                print("====Invalid NumGrid Start====")
-//                                var gridMatrix = [[UInt]](count :4, repeatedValue: [UInt](count :4, repeatedValue: 0))
-//                                 var gridIdMatrix = [[Int]](count :4, repeatedValue: [Int](count :4, repeatedValue: 0))
-//                                for (grid, position) in self.matrix.grids {
-//                                    gridMatrix[position[0]][position[1]] = grid.number
-//                                    gridIdMatrix[position[0]][position[1]] = grid.id
-//                                }
-//                                print(gridMatrix)
-//                                print(gridIdMatrix)
-//                                print("====Invalid NumGrid End====")
+                                print("====Invalid NumGrid Start====")
+                                print(self.matrix.grids)
+                                print(self.matrix.matrixByRow)
+                                print("====Invalid NumGrid End====")
                                 self.askToPlayAgain()
                             } catch {
                                 
                             }
-
-                            
-                            self.touchEnable = true
-                            self.matrix.stepGame()
                         }
                     ]
                 )

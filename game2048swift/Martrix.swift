@@ -124,17 +124,18 @@ class Matrix{
     }
     
     func checkIfRight() throws{
-//        for (grid, position) in grids {
-//            let i = position[0]
-//            let j = position[1]
-//            let num = matrixByRow[i][j]
-//            if num != grid.number {
-//                throw GameError.WrongNumGrid
-//            }
-//        }
-//        if grids.count + getSpaceFlag().count != 16 {
-//            throw GameError.WrongNumGrid
-//        }
+        for y in 0...3 {
+            for x in 0...3{
+                let showNum = matrixByRow[y][x]
+                if showNum == 0 && grids[y][x] != nil{
+                    throw GameError.WrongNumGrid
+                }else if showNum != 0 && grids[y][x] == nil{
+                    throw GameError.WrongNumGrid
+                }else if showNum != 0 && grids[y][x]!.number != showNum{
+                    throw GameError.WrongNumGrid
+                }
+            }
+        }
     }
     
 }
